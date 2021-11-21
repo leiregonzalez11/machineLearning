@@ -1,6 +1,7 @@
 import nn
 
 class PerceptronModel(object):
+
     def __init__(self, dimensions):
         """
         Initialize a new Perceptron instance.
@@ -29,6 +30,8 @@ class PerceptronModel(object):
         """
         "*** YOUR CODE HERE ***"
 
+        return nn.DotProduct(self.w, x)
+
     def get_prediction(self, x):
         """
         Calculates the predicted class for a single data point `x`.
@@ -38,14 +41,34 @@ class PerceptronModel(object):
         """
         "*** YOUR CODE HERE ***"
 
+        if nn.as_scalar(self.run(x)) >= 0.0:
+            return 1
+
+        return -1
+
     def train(self, dataset):
         """
         Train the perceptron until convergence.
         Hasta que TODOS los ejemplos del train esten bien clasificados. Es decir, hasta que la clase predicha en se corresponda con la real en TODOS los ejemplos del train
         """
+        
         "*** YOUR CODE HERE ***"
 
+        conv = False
+
+        while not conv:
+            follow = False
+
+            for x, y in dataset.iterate_once(1):
+                if self.get_prediction(x) != nn.as_scalar(y):
+                    follow = True
+                    nn.Parameter.update(self.w, x, nn.as_scalar(y))
+
+            if not follow:
+                conv = True
+
 class RegressionModel(object):
+
     """
     A neural network model for approximating a function that maps from real
     numbers to real numbers. The network should be sufficiently large to be able
@@ -70,7 +93,7 @@ class RegressionModel(object):
         Runs the model for a batch of examples.
 
         Inputs:
-            x: a node with shape (batch_size x 1). En este caso cada ejemplo solo está compuesto por un rasgo
+            x: a node with shape (batch_size x 1). En este caso cada ejemplo solo estï¿½ compuesto por un rasgo
         Returns:
             A node with shape (batch_size x 1) containing predicted y-values.
             Como es un modelo de regresion, cada valor y tambien tendra un unico valor
@@ -164,12 +187,17 @@ class DigitClassificationModel(object):
             y: a node with shape (batch_size x 10)
         Returns: a loss node
         """
-        "*** YOUR CODE HERE ***"#NO ES NECESARIO QUE LO IMPLEMENTEIS, SE OS DA HECHO
-         return nn.SoftmaxLoss(self.run(x), y)# COMO VEIS LLAMA AL RUN PARA OBTENER POR CADA BATCH
-                                              # LOS 10 VALORES DEL "COSENO". TENIENDO EL Y REAL POR CADA EJEMPLO
-                                              # APLICA SOFTMAX PARA CALCULAR EL COSENO MAX
-                                              # (COMO UNA PROBABILIDAD), Y ESA SERA SU PREDICCION,
-                                              # LA CLASE QUE MUESTRE EL MAYOR COSENO, Y LUEGO LA COMPARARA CON Y 
+        "*** YOUR CODE HERE ***"
+
+        #NO ES NECESARIO QUE LO IMPLEMENTEIS, SE OS DA HECHO
+
+        return nn.SoftmaxLoss(self.run(x), y)
+
+        # COMO VEIS LLAMA AL RUN PARA OBTENER POR CADA BATCH
+        # LOS 10 VALORES DEL "COSENO". TENIENDO EL Y REAL POR CADA EJEMPLO
+        # APLICA SOFTMAX PARA CALCULAR EL COSENO MAX
+        # (COMO UNA PROBABILIDAD), Y ESA SERA SU PREDICCION,
+        # LA CLASE QUE MUESTRE EL MAYOR COSENO, Y LUEGO LA COMPARARA CON Y
 
     def train(self, dataset):
         """

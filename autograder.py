@@ -299,7 +299,9 @@ def trace_node(node_to_trace):
     return nodes
 
 @test('q1', points=6)
+
 def check_perceptron(tracker):
+
     import models
 
     print("Sanity checking perceptron...")
