@@ -51,7 +51,7 @@ class PerceptronModel(object):
         Train the perceptron until convergence.
         Hasta que TODOS los ejemplos del train esten bien clasificados. Es decir, hasta que la clase predicha en se corresponda con la real en TODOS los ejemplos del train
         """
-        
+
         "*** YOUR CODE HERE ***"
 
         conv = False
@@ -79,26 +79,34 @@ class RegressionModel(object):
     def __init__(self):
         # Initialize your model parameters here
         # For example:
-        # self.batch_size = 20
-        # self.w0 = nn.Parameter(1, 5)
-        # self.b0 = nn.Parameter(1, 5)
-        # self.w1 = nn.Parameter(5, 1)
-        # self.b1 = nn.Parameter(1, 1)
-        # self.lr = -0.01
-        #
+
+        self.batch_size = 20
+        self.w0 = nn.Parameter(1, 25)
+        self.b0 = nn.Parameter(1, 25)
+        self.w1 = nn.Parameter(25, 1)
+        self.b1 = nn.Parameter(1, 1)
+        self.lr = -0.01
+
         "*** YOUR CODE HERE ***"
+
 
     def run(self, x):
         """
         Runs the model for a batch of examples.
 
         Inputs:
-            x: a node with shape (batch_size x 1). En este caso cada ejemplo solo est� compuesto por un rasgo
+            x: a node with shape (batch_size x 1). En este caso cada ejemplo solo esta compuesto por un rasgo
         Returns:
             A node with shape (batch_size x 1) containing predicted y-values.
             Como es un modelo de regresion, cada valor y tambien tendra un unico valor
         """
         "*** YOUR CODE HERE ***"
+
+        pr1 = nn.Linear(x, self.w0)
+        pl1 = nn.ReLU(nn.AddBias(pr1, self.b0))
+        pr2 = nn.Linear(pl1, self.w1)
+
+        return nn.AddBias(pr2, self.b1)
 
     def get_loss(self, x, y):
         """
@@ -114,6 +122,8 @@ class RegressionModel(object):
         """
         "*** YOUR CODE HERE ***"
 
+        return nn.SquareLoss(self.run(x), y)
+
 
     def train(self, dataset):
         """
@@ -124,13 +134,24 @@ class RegressionModel(object):
         batch_size = self.batch_size
         total_loss = 100000
         while total_loss > 0.02:
+
             #ITERAR SOBRE EL TRAIN EN LOTES MARCADOS POR EL BATCH SIZE COMO HABEIS HECHO EN LOS OTROS EJERCICIOS
             #ACTUALIZAR LOS PESOS EN BASE AL ERROR loss = self.get_loss(x, y) QUE RECORDAD QUE GENERA
             #UNA FUNCION DE LA LA CUAL SE  PUEDE CALCULAR LA DERIVADA (GRADIENTE)
 
             "*** YOUR CODE HERE ***"
 
-            total_loss = nn.as_scalar(self.get_loss(nn.Constant(dataset.x), nn.Constant(dataset.y)))#AQUI SE CALCULA OTRA VEZ EL ERROR PERO SOBRE TODO EL TRAIN A LA VEZ (CUIDADO!! NO ES LO MISMO el x de antes QUE dataset.x)
+            for x, y in dataset.iterate_once(batch_size):
+                gradients = nn.gradients(self.get_loss(x, y), [self.w0, self.w1, self.b0, self.b1])
+                self.w0.update(gradients[0], self.lr)
+                self.w1.update(gradients[1], self.lr)
+                self.b0.update(gradients[2], self.lr)
+                self.b1.update(gradients[3], self.lr)
+
+            # AQUI SE CALCULA OTRA VEZ EL ERROR PERO SOBRE TODO EL TRAIN A LA VEZ (CUIDADO!! NO ES LO MISMO el x de antes QUE dataset.x)
+            total_loss = nn.as_scalar(self.get_loss(nn.Constant(dataset.x), nn.Constant(dataset.y)))
+
+
             
 class DigitClassificationModel(object):
     """
