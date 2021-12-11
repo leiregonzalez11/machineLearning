@@ -1,11 +1,11 @@
 import nn
 
+
 class PerceptronModel(object):
 
     def __init__(self, dimensions):
         """
         Initialize a new Perceptron instance.
-
         A perceptron classifies data points as either belonging to a particular
         class (+1) or not (-1). `dimensions` is the dimensionality of the data.
         For example, dimensions=2 would mean that the perceptron must classify
@@ -22,7 +22,7 @@ class PerceptronModel(object):
     def run(self, x):
         """
         Calculates the score assigned by the perceptron to a data point x.
-        
+
         Inputs:
             x: a node with shape (1 x dimensions)
         Returns: a node containing a single number (the score)
@@ -36,7 +36,7 @@ class PerceptronModel(object):
         """
         Calculates the predicted class for a single data point `x`.
         Dependiendo del valor del coseno devolvera 1 o -1
-        
+
         Returns: 1 or -1
         """
         "*** YOUR CODE HERE ***"
@@ -67,8 +67,8 @@ class PerceptronModel(object):
             if not follow:
                 conv = True
 
-class RegressionModel(object):
 
+class RegressionModel(object):
     """
     A neural network model for approximating a function that maps from real
     numbers to real numbers. The network should be sufficiently large to be able
@@ -76,6 +76,7 @@ class RegressionModel(object):
     NO ES CLASIFICACION, ES REGRESION. ES DECIR; APRENDER UNA FUNCION.
     SI ME DAN X TENGO QUE APRENDER A OBTENER LA MISMA Y QUE EN LA FUNCION ORIGINAL DE LA QUE QUIERO APRENDER
     """
+
     def __init__(self):
         # Initialize your model parameters here
         # For example:
@@ -89,11 +90,9 @@ class RegressionModel(object):
 
         "*** YOUR CODE HERE ***"
 
-
     def run(self, x):
         """
         Runs the model for a batch of examples.
-
         Inputs:
             x: a node with shape (batch_size x 1). En este caso cada ejemplo solo esta compuesto por un rasgo
         Returns:
@@ -111,33 +110,31 @@ class RegressionModel(object):
     def get_loss(self, x, y):
         """
         Computes the loss for a batch of examples.
-
         Inputs:
             x: a node with shape (batch_size x 1)
             y: a node with shape (batch_size x 1), containing the true y-values
                 to be used for training
         Returns: a loss node
-                ----> ES FACIL COPIA Y PEGA ESTO Y ANNADE LA VARIABLE QUE HACE FALTA PARA CALCULAR EL ERROR 
+                ----> ES FACIL COPIA Y PEGA ESTO Y ANNADE LA VARIABLE QUE HACE FALTA PARA CALCULAR EL ERROR
                 return nn.SquareLoss(self.run(x),ANNADE LA VARIABLE QUE ES NECESARIA AQUI), para medir el error, necesitas comparar el resultado de tu prediccion con .... que?
         """
         "*** YOUR CODE HERE ***"
 
         return nn.SquareLoss(self.run(x), y)
 
-
     def train(self, dataset):
         """
         Trains the model.
-        
+
         """
-        
+
         batch_size = self.batch_size
         total_loss = 100000
         while total_loss > 0.02:
 
-            #ITERAR SOBRE EL TRAIN EN LOTES MARCADOS POR EL BATCH SIZE COMO HABEIS HECHO EN LOS OTROS EJERCICIOS
-            #ACTUALIZAR LOS PESOS EN BASE AL ERROR loss = self.get_loss(x, y) QUE RECORDAD QUE GENERA
-            #UNA FUNCION DE LA LA CUAL SE  PUEDE CALCULAR LA DERIVADA (GRADIENTE)
+            # ITERAR SOBRE EL TRAIN EN LOTES MARCADOS POR EL BATCH SIZE COMO HABEIS HECHO EN LOS OTROS EJERCICIOS
+            # ACTUALIZAR LOS PESOS EN BASE AL ERROR loss = self.get_loss(x, y) QUE RECORDAD QUE GENERA
+            # UNA FUNCION DE LA LA CUAL SE  PUEDE CALCULAR LA DERIVADA (GRADIENTE)
 
             "*** YOUR CODE HERE ***"
 
@@ -152,37 +149,42 @@ class RegressionModel(object):
             total_loss = nn.as_scalar(self.get_loss(nn.Constant(dataset.x), nn.Constant(dataset.y)))
 
 
-            
 class DigitClassificationModel(object):
     """
     A model for handwritten digit classification using the MNIST dataset.
-
     Each handwritten digit is a 28x28 pixel grayscale image, which is flattened
     into a 784-dimensional vector for the purposes of this model. Each entry in
     the vector is a floating point number between 0 and 1.
-
     The goal is to sort each digit into one of 10 classes (number 0 through 9).
-
     (See RegressionModel for more information about the APIs of different
     methods here. We recommend that you implement the RegressionModel before
     working on this part of the project.)
     """
+
     def __init__(self):
         # Initialize your model parameters here
         # TEN ENCUENTA QUE TIENES 10 CLASES, ASI QUE LA ULTIMA CAPA TENDRA UNA SALIDA DE 10 VALORES,
         # UN VALOR POR CADA CLASE
 
-        output_size = 10 # TAMANO EQUIVALENTE AL NUMERO DE CLASES DADO QUE QUIERES OBTENER 10 "COSENOS"
+
+
+        # TAMANO EQUIVALENTE AL NUMERO DE CLASES DADO QUE QUIERES OBTENER 10 "COSENOS"
         "*** YOUR CODE HERE ***"
+
+        output_size = 10
+        self.batch_size = 20
+        self.w0 = nn.Parameter(784, 120)
+        self.b0 = nn.Parameter(1, 120)
+        self.w1 = nn.Parameter(120, 10)
+        self.b1 = nn.Parameter(1, 10)
+        self.lr = -0.01
 
     def run(self, x):
         """
         Runs the model for a batch of examples.
-
         Your model should predict a node with shape (batch_size x 10),
         containing scores. Higher scores correspond to greater probability of
         the image belonging to a particular class.
-
         Inputs:
             x: a node with shape (batch_size x 784)
         Output:
@@ -192,17 +194,21 @@ class DigitClassificationModel(object):
         """
         "*** YOUR CODE HERE ***"
 
+        pr1 = nn.Linear(x, self.w0)
+        pl1 = nn.ReLU(nn.AddBias(pr1, self.b0))
+        pr2 = nn.Linear(pl1, self.w1)
+
+        return nn.AddBias(pr2, self.b1)
+
     def get_loss(self, x, y):
         """
         Computes the loss for a batch of examples.
-
         The correct labels `y` are represented as a node with shape
         (batch_size x 10). Each row is a one-hot vector encoding the correct
         digit class (0-9).
         POR EJEMPLO: [0,0,0,0,0,1,0,0,0,0,0] seria la y correspondiente al 5
                      [0,1,0,0,0,0,0,0,0,0,0] seria la y correspondiente al 1
-
-        EN ESTE CASO ESTAMOS HABLANDO DE MULTICLASS, ASI QUE TIENES QUE CALCULAR 
+        EN ESTE CASO ESTAMOS HABLANDO DE MULTICLASS, ASI QUE TIENES QUE CALCULAR
         Inputs:
             x: a node with shape (batch_size x 784)
             y: a node with shape (batch_size x 10)
@@ -210,7 +216,7 @@ class DigitClassificationModel(object):
         """
         "*** YOUR CODE HERE ***"
 
-        #NO ES NECESARIO QUE LO IMPLEMENTEIS, SE OS DA HECHO
+        # NO ES NECESARIO QUE LO IMPLEMENTEIS, SE OS DA HECHO
 
         return nn.SoftmaxLoss(self.run(x), y)
 
@@ -226,23 +232,35 @@ class DigitClassificationModel(object):
         EN ESTE CASO EN VEZ DE PARAR CUANDO EL ERROR SEA MENOR QUE UN VALOR O NO HAYA ERROR (CONVERGENCIA),
         SE PUEDE HACER ALGO SIMILAR QUE ES EN NUMERO DE ACIERTOS. EL VALIDATION ACCURACY
         NO LO TENEIS QUE IMPLEMENTAR, PERO SABED QUE EMPLEA EL RESULTADO DEL SOFTMAX PARA CALCULAR
-        EL NUM DE EJEMPLOS DEL TRAIN QUE SE HAN CLASIFICADO CORRECTAMENTE 
+        EL NUM DE EJEMPLOS DEL TRAIN QUE SE HAN CLASIFICADO CORRECTAMENTE
         """
         batch_size = self.batch_size
-        while dataset.get_validation_accuracy() < 0.97:
-            #ITERAR SOBRE EL TRAIN EN LOTES MARCADOS POR EL BATCH SIZE COMO HABEIS HECHO EN LOS OTROS EJERCICIOS
-            #ACTUALIZAR LOS PESOS EN BASE AL ERROR loss = self.get_loss(x, y) QUE RECORDAD QUE GENERA
-            #UNA FUNCION DE LA LA CUAL SE  PUEDE CALCULAR LA DERIVADA (GRADIENTE)
+        total_accuracy = 0
+        while total_accuracy < 0.97:
+            # ITERAR SOBRE EL TRAIN EN LOTES MARCADOS POR EL BATCH SIZE COMO HABEIS HECHO EN LOS OTROS EJERCICIOS
+            # ACTUALIZAR LOS PESOS EN BASE AL ERROR loss = self.get_loss(x, y) QUE RECORDAD QUE GENERA
+            # UNA FUNCION DE LA LA CUAL SE  PUEDE CALCULAR LA DERIVADA (GRADIENTE)
             "*** YOUR CODE HERE ***"
+
+            for x, y in dataset.iterate_once(batch_size):
+                gradients = nn.gradients(self.get_loss(x, y), [self.w0, self.w1, self.b0, self.b1])
+                self.w0.update(gradients[0], self.lr)
+                self.w1.update(gradients[1], self.lr)
+                self.b0.update(gradients[2], self.lr)
+                self.b1.update(gradients[3], self.lr)
+
+            total_accuracy = dataset.get_validation_accuracy()
+
+
 
 class LanguageIDModel(object):
     """
     A model for language identification at a single-word granularity.
-
     (See RegressionModel for more information about the APIs of different
     methods here. We recommend that you implement the RegressionModel before
     working on this part of the project.)
     """
+
     def __init__(self):
         # Our dataset contains words from five different languages, and the
         # combined alphabets of the five languages contain a total of 47 unique
@@ -257,10 +275,8 @@ class LanguageIDModel(object):
     def run(self, xs):
         """
         Runs the model for a batch of examples.
-
         Although words have different lengths, our data processing guarantees
         that within a single batch, all words will be of the same length (L).
-
         Here `xs` will be a list of length L. Each element of `xs` will be a
         node with shape (batch_size x self.num_chars), where every row in the
         array is a one-hot vector encoding of a character. For example, if we
@@ -269,13 +285,11 @@ class LanguageIDModel(object):
         index 7 reflects the fact that "cat" is the last word in the batch, and
         the index 0 reflects the fact that the letter "a" is the inital (0th)
         letter of our combined alphabet for this task.
-
         Your model should use a Recurrent Neural Network to summarize the list
         `xs` into a single node of shape (batch_size x hidden_size), for your
         choice of hidden_size. It should then calculate a node of shape
         (batch_size x 5) containing scores, where higher scores correspond to
         greater probability of the word originating from a particular language.
-
         Inputs:
             xs: a list with L elements (one per character), where each element
                 is a node with shape (batch_size x self.num_chars)
@@ -288,11 +302,9 @@ class LanguageIDModel(object):
     def get_loss(self, xs, y):
         """
         Computes the loss for a batch of examples.
-
         The correct labels `y` are represented as a node with shape
         (batch_size x 5). Each row is a one-hot vector encoding the correct
         language.
-
         Inputs:
             xs: a list with L elements (one per character), where each element
                 is a node with shape (batch_size x self.num_chars)

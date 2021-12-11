@@ -24,10 +24,10 @@ def maybe_sleep_and_close(seconds):
 
 def get_data_path(filename):
     path = os.path.join(
-        os.path.dirname(__file__), os.pardir, "../machinelearning.tar/machinelearning/data", filename)
+        os.path.dirname(__file__), os.pardir, "../machinelearning/data", filename)
     if not os.path.exists(path):
         path = os.path.join(
-            os.path.dirname(__file__), "../machinelearning.tar/machinelearning/data", filename)
+            os.path.dirname(__file__), "../machinelearning/data", filename)
     if not os.path.exists(path):
         path = os.path.join(
             os.path.dirname(__file__), filename)
