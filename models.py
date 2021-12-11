@@ -82,9 +82,9 @@ class RegressionModel(object):
         # For example:
 
         self.batch_size = 20
-        self.w0 = nn.Parameter(1, 25)
-        self.b0 = nn.Parameter(1, 25)
-        self.w1 = nn.Parameter(25, 1)
+        self.w0 = nn.Parameter(1, 28)
+        self.b0 = nn.Parameter(1, 28)
+        self.w1 = nn.Parameter(28, 1)
         self.b1 = nn.Parameter(1, 1)
         self.lr = -0.01
 
