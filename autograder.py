@@ -201,6 +201,7 @@ def main():
                 continue
             tracker.begin_test(fn.__name__)
             try:
+
                 fn(tracker)
             except KeyboardInterrupt:
                 tracker.unmute()

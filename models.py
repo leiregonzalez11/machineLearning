@@ -162,20 +162,19 @@ class DigitClassificationModel(object):
     """
 
     def __init__(self):
+
         # Initialize your model parameters here
         # TEN ENCUENTA QUE TIENES 10 CLASES, ASI QUE LA ULTIMA CAPA TENDRA UNA SALIDA DE 10 VALORES,
         # UN VALOR POR CADA CLASE
-
-
 
         # TAMANO EQUIVALENTE AL NUMERO DE CLASES DADO QUE QUIERES OBTENER 10 "COSENOS"
         "*** YOUR CODE HERE ***"
 
         output_size = 10
-        self.batch_size = 20
-        self.w0 = nn.Parameter(784, 120)
-        self.b0 = nn.Parameter(1, 120)
-        self.w1 = nn.Parameter(120, 10)
+        self.batch_size = 8
+        self.w0 = nn.Parameter(784, 102)
+        self.b0 = nn.Parameter(1, 102)
+        self.w1 = nn.Parameter(102, 10)
         self.b1 = nn.Parameter(1, 10)
         self.lr = -0.01
 
